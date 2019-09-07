@@ -1,0 +1,11 @@
+
+/*custom-font*/
+
+@font-face {
+  font-family: 'cargoD';
+  src: url('CargoD-Regular.eot'); /* IE9 Compat Modes */
+  src: url('CargoD-Regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('CargoD-Regular.woff') format('woff'), /* Pretty Modern Browsers */
+       url('CargoD-Regular.ttf')  format('truetype'), /* Safari, Android, iOS */
+       url('CargoD-Regular.svg#svgFontName') format('svg'); /* Legacy iOS */
+}
