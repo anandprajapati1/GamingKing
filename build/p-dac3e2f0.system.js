@@ -1,1 +1,643 @@
-System.register([],function(){"use strict";return{execute:function(){var e=function(){function e(){this.start=0;this.end=0;this.previous=null;this.parent=null;this.rules=null;this.parsedCssText="";this.cssText="";this.atRule=false;this.type=0;this.keyframesName="";this.selector="";this.parsedSelector=""}return e}();function t(e){e=r(e);return s(n(e),e)}function r(e){return e.replace(l.comments,"").replace(l.port,"")}function n(t){var r=new e;r["start"]=0;r["end"]=t.length;var n=r;for(var s=0,i=t.length;s<i;s++){if(t[s]===o){if(!n["rules"]){n["rules"]=[]}var a=n;var l=a["rules"][a["rules"].length-1]||null;n=new e;n["start"]=s+1;n["parent"]=a;n["previous"]=l;a["rules"].push(n)}else if(t[s]===u){n["end"]=s+1;n=n["parent"]||r}}return r}function s(e,t){var r=t.substring(e["start"],e["end"]-1);e["parsedCssText"]=e["cssText"]=r.trim();if(e.parent){var n=e.previous?e.previous["end"]:e.parent["start"];r=t.substring(n,e["start"]-1);r=i(r);r=r.replace(l.multipleSpaces," ");r=r.substring(r.lastIndexOf(";")+1);var o=e["parsedSelector"]=e["selector"]=r.trim();e["atRule"]=o.indexOf(p)===0;if(e["atRule"]){if(o.indexOf(f)===0){e["type"]=a.MEDIA_RULE}else if(o.match(l.keyframesRule)){e["type"]=a.KEYFRAMES_RULE;e["keyframesName"]=e["selector"].split(l.multipleSpaces).pop()}}else{if(o.indexOf(c)===0){e["type"]=a.MIXIN_RULE}else{e["type"]=a.STYLE_RULE}}}var u=e["rules"];if(u){for(var h=0,v=u.length,m=void 0;h<v&&(m=u[h]);h++){s(m,t)}}return e}function i(e){return e.replace(/\\([0-9a-f]{1,6})\s/gi,function(){var e=arguments[1],t=6-e.length;while(t--){e="0"+e}return"\\"+e})}var a={STYLE_RULE:1,KEYFRAMES_RULE:7,MEDIA_RULE:4,MIXIN_RULE:1e3};var o="{";var u="}";var l={comments:/\/\*[^*]*\*+([^\/*][^*]*\*+)*\//gim,port:/@import[^;]*;/gim,customProp:/(?:^[^;\-\s}]+)?--[^;{}]*?:[^{};]*?(?:[;\n]|$)/gim,mixinProp:/(?:^[^;\-\s}]+)?--[^;{}]*?:[^{};]*?{[^}]*?}(?:[;\n]|$)?/gim,mixinApply:/@apply\s*\(?[^);]*\)?\s*(?:[;\n]|$)?/gim,varApply:/[^;:]*?:[^;]*?var\([^;]*\)(?:[;\n]|$)?/gim,keyframesRule:/^@[^\s]*keyframes/,multipleSpaces:/\s+/g};var c="--";var f="@media";var p="@";function h(e,t,r){e["lastIndex"]=0;var n=t.substring(r).match(e);if(n){var s=r+n["index"];return{start:s,end:s+n[0].length}}return null}var v=/\bvar\(/;var m=/\B--[\w-]+\s*:/;var d=/\/\*[^*]*\*+([^\/*][^*]*\*+)*\//gim;var g=/^[\t ]+\n/gm;function y(e,t,r){if(e[t]){return e[t]}if(r){return M(r,e)}return""}function S(e,t){var r=0;var n=t;for(;n<e.length;n++){var s=e[n];if(s==="("){r++}else if(s===")"){r--;if(r<=0){return n+1}}}return n}function E(e,t){var r=h(v,e,t);if(!r){return null}var n=S(e,r.start);var s=e.substring(r.end,n-1);var i=s.split(","),a=i[0],o=i.slice(1);return{start:r.start,end:n,propName:a.trim(),fallback:o.length>0?o.join(",").trim():undefined}}function b(e,t,r){var n=E(e,r);if(!n){t.push(e.substring(r,e.length));return e.length}var s=n.propName;var i=n.fallback!=null?x(n.fallback):undefined;t.push(e.substring(r,n.start),function(e){return y(e,s,i)});return n.end}function M(e,t){var r="";for(var n=0;n<e.length;n++){var s=e[n];r+=typeof s==="string"?s:s(t)}return r}function w(e,t){var r=false;var n=false;var s=t;for(;s<e.length;s++){var i=e[s];if(r){if(n&&i==='"'){r=false}if(!n&&i==="'"){r=false}}else{if(i==='"'){r=true;n=true}else if(i==="'"){r=true;n=false}else if(i===";"){return s+1}else if(i==="}"){return s}}}return s}function L(e){var t="";var r=0;while(true){var n=h(m,e,r);var s=n?n.start:e.length;t+=e.substring(r,s);if(n){r=w(e,s)}else{break}}return t}function x(e){var t=0;e=e.replace(d,"");e=L(e).replace(g,"");var r=[];while(t<e.length){t=b(e,r,t)}return r}function R(e){var t={};e.forEach(function(e){e.declarations.forEach(function(e){t[e.prop]=e.value})});var r={};var n=Object.entries(t);var s=function(e){var t=false;n.forEach(function(e){var n=e[0],s=e[1];var i=M(s,r);if(i!==r[n]){r[n]=i;t=true}});if(!t){return"break"}};for(var i=0;i<10;i++){var a=s();if(a==="break")break}return r}function T(e,t){if(t===void 0){t=0}if(!e.rules){return[]}var r=[];e.rules.filter(function(e){return e.type===a.STYLE_RULE}).forEach(function(e){var n=H(e.cssText);if(n.length>0){e.parsedSelector.split(",").forEach(function(e){e=e.trim();r.push({selector:e,declarations:n,specificity:k(),nu:t})})}t++});return r}function k(e){return 1}var _="!important";var I=/(?:^|[;\s{]\s*)(--[\w-]*?)\s*:\s*(?:((?:'(?:\\'|.)*?'|"(?:\\"|.)*?"|\([^)]*?\)|[^};{])+)|\{([^}]*)\}(?:(?=[;\s}])|$))/gm;function H(e){var t=[];var r;while(r=I.exec(e.trim())){var n=A(r[2]),s=n.value,i=n.important;t.push({prop:r[1].trim(),value:x(s),important:i})}return t}function A(e){var t=/\s+/gim;e=e.replace(t," ").trim();var r=e.endsWith(_);if(r){e=e.substr(0,e.length-_.length).trim()}return{value:e,important:r}}function C(e,t,r){var n=[];var s=U(t,e);r.forEach(function(e){return n.push(e)});s.forEach(function(e){return n.push(e)});var i=N(n);var a=i.filter(function(t){return $(e,t.selector)});return O(a)}function U(e,t){var r=[];while(t){var n=e.get(t);if(n){r.push(n)}t=t.parentElement}return r}function N(e){var t=[];e.forEach(function(e){t.push.apply(t,e.selectors)});return t}function O(e){e.sort(function(e,t){if(e.specificity===t.specificity){return e.nu-t.nu}return e.specificity-t.specificity});return e}function $(e,t){return t===":root"||t==="html"||e.matches(t)}function G(e){var r=t(e);var n=x(e);var s=T(r);return{original:e,template:n,selectors:s,usesCssVars:n.length>1}}function V(e,t){var r=G(t.innerHTML);r.styleEl=t;e.push(r)}function Y(e){var t=N(e);var r=R(t);e.forEach(function(e){if(e.usesCssVars){e.styleEl.innerHTML=M(e.template,r)}})}function j(e,t){var r=e.template.map(function(r){return typeof r==="string"?P(r,e.scopeId,t):r});var n=e.selectors.map(function(r){return Object.assign({},r,{selector:P(r.selector,e.scopeId,t)})});return Object.assign({},e,{template:r,selectors:n,scopeId:t})}function P(e,t,r){e=q(e,"\\."+t,"."+r);return e}function q(e,t,r){return e.replace(new RegExp(t,"g"),r)}function F(e,t){B(e,t);return W(e,t)}function W(e,t){var r=[];var n=e.querySelectorAll('link[rel="stylesheet"][href]');for(var s=0;s<n.length;s++){r.push(D(e,t,n[s]))}return Promise.all(r)}function B(e,t){var r=e.querySelectorAll("style:not([data-styles])");for(var n=0;n<r.length;n++){V(t,r[n])}}function D(e,t,r){var n=r.href;return fetch(n).then(function(e){return e.text()}).then(function(s){if(X(s)&&r.parentNode){if(Z(s)){s=J(s,n)}var i=e.createElement("style");i.setAttribute("data-styles","");i.innerHTML=s;V(t,i);r.parentNode.insertBefore(i,r);r.remove()}}).catch(function(e){console.error(e)})}var K=/[\s;{]--[-a-zA-Z0-9]+\s*:/m;function X(e){return e.indexOf("var(")>-1||K.test(e)}var z=/url[\s]*\([\s]*['"]?(?![http|\/])([^\'\"\)]*)[\s]*['"]?\)[\s]*/gim;function Z(e){z.lastIndex=0;return z.test(e)}function J(e,t){var r=t.replace(/[^\/]*$/,"");return e.replace(z,function(e,t){var n=r+t;return e.replace(t,n)})}var Q=function(){function e(e,t){this.win=e;this.doc=t;this.count=0;this.hostStyleMap=new WeakMap;this.hostScopeMap=new WeakMap;this.globalScopes=[];this.scopesMap=new Map}e.prototype.initShim=function(){var e=this;return new Promise(function(t){e.win.requestAnimationFrame(function(){F(e.doc,e.globalScopes).then(function(){return t()})})})};e.prototype.addLink=function(e){var t=this;return D(this.doc,this.globalScopes,e).then(function(){t.updateGlobal()})};e.prototype.addGlobalStyle=function(e){V(this.globalScopes,e);this.updateGlobal()};e.prototype.createHostStyle=function(e,t,r,n){if(this.hostScopeMap.has(e)){throw new Error("host style already created")}var s=this.registerHostTemplate(r,t,n);var i=this.doc.createElement("style");if(!s.usesCssVars){i.innerHTML=r}else if(n){i["s-sc"]=t=s.scopeId+"-"+this.count;i.innerHTML="/*needs update*/";this.hostStyleMap.set(e,i);this.hostScopeMap.set(e,j(s,t));this.count++}else{s.styleEl=i;if(!s.usesCssVars){i.innerHTML=M(s.template,{})}this.globalScopes.push(s);this.updateGlobal();this.hostScopeMap.set(e,s)}return i};e.prototype.removeHost=function(e){var t=this.hostStyleMap.get(e);if(t){t.remove()}this.hostStyleMap.delete(e);this.hostScopeMap.delete(e)};e.prototype.updateHost=function(e){var t=this.hostScopeMap.get(e);if(t&&t.usesCssVars&&t.isScoped){var r=this.hostStyleMap.get(e);if(r){var n=C(e,this.hostScopeMap,this.globalScopes);var s=R(n);r.innerHTML=M(t.template,s)}}};e.prototype.updateGlobal=function(){Y(this.globalScopes)};e.prototype.registerHostTemplate=function(e,t,r){var n=this.scopesMap.get(t);if(!n){n=G(e);n.scopeId=t;n.isScoped=r;this.scopesMap.set(t,n)}return n};return e}();var ee=window;function te(){return!(ee.CSS&&ee.CSS.supports&&ee.CSS.supports("color","var(--c)"))}if(!ee.__stencil_cssshim&&te()){ee.__stencil_cssshim=new Q(ee,document)}}}});
+System.register([], function () {
+    'use strict';
+    return {
+        execute: function () {
+            /*
+            Extremely simple css parser. Intended to be not more than what we need
+            and definitely not necessarily correct =).
+            */
+            /** @unrestricted */
+            var StyleNode = /** @class */ (function () {
+                function StyleNode() {
+                    this.start = 0;
+                    this.end = 0;
+                    this.previous = null;
+                    this.parent = null;
+                    this.rules = null;
+                    this.parsedCssText = '';
+                    this.cssText = '';
+                    this.atRule = false;
+                    this.type = 0;
+                    this.keyframesName = '';
+                    this.selector = '';
+                    this.parsedSelector = '';
+                }
+                return StyleNode;
+            }());
+            // given a string of css, return a simple rule tree
+            /**
+             * @param {string} text
+             * @return {StyleNode}
+             */
+            function parse(text) {
+                text = clean(text);
+                return parseCss(lex(text), text);
+            }
+            // remove stuff we don't care about that may hinder parsing
+            /**
+             * @param {string} cssText
+             * @return {string}
+             */
+            function clean(cssText) {
+                return cssText.replace(RX.comments, '').replace(RX.port, '');
+            }
+            // super simple {...} lexer that returns a node tree
+            /**
+             * @param {string} text
+             * @return {StyleNode}
+             */
+            function lex(text) {
+                var root = new StyleNode();
+                root['start'] = 0;
+                root['end'] = text.length;
+                var n = root;
+                for (var i = 0, l = text.length; i < l; i++) {
+                    if (text[i] === OPEN_BRACE) {
+                        if (!n['rules']) {
+                            n['rules'] = [];
+                        }
+                        var p = n;
+                        var previous = p['rules'][p['rules'].length - 1] || null;
+                        n = new StyleNode();
+                        n['start'] = i + 1;
+                        n['parent'] = p;
+                        n['previous'] = previous;
+                        p['rules'].push(n);
+                    }
+                    else if (text[i] === CLOSE_BRACE) {
+                        n['end'] = i + 1;
+                        n = n['parent'] || root;
+                    }
+                }
+                return root;
+            }
+            // add selectors/cssText to node tree
+            /**
+             * @param {StyleNode} node
+             * @param {string} text
+             * @return {StyleNode}
+             */
+            function parseCss(node, text) {
+                var t = text.substring(node['start'], node['end'] - 1);
+                node['parsedCssText'] = node['cssText'] = t.trim();
+                if (node.parent) {
+                    var ss = node.previous ? node.previous['end'] : node.parent['start'];
+                    t = text.substring(ss, node['start'] - 1);
+                    t = _expandUnicodeEscapes(t);
+                    t = t.replace(RX.multipleSpaces, ' ');
+                    // TODO(sorvell): ad hoc; make selector include only after last ;
+                    // helps with mixin syntax
+                    t = t.substring(t.lastIndexOf(';') + 1);
+                    var s = node['parsedSelector'] = node['selector'] = t.trim();
+                    node['atRule'] = (s.indexOf(AT_START) === 0);
+                    // note, support a subset of rule types...
+                    if (node['atRule']) {
+                        if (s.indexOf(MEDIA_START) === 0) {
+                            node['type'] = types.MEDIA_RULE;
+                        }
+                        else if (s.match(RX.keyframesRule)) {
+                            node['type'] = types.KEYFRAMES_RULE;
+                            node['keyframesName'] = node['selector'].split(RX.multipleSpaces).pop();
+                        }
+                    }
+                    else {
+                        if (s.indexOf(VAR_START) === 0) {
+                            node['type'] = types.MIXIN_RULE;
+                        }
+                        else {
+                            node['type'] = types.STYLE_RULE;
+                        }
+                    }
+                }
+                var r$ = node['rules'];
+                if (r$) {
+                    for (var i = 0, l = r$.length, r = void 0; (i < l) && (r = r$[i]); i++) {
+                        parseCss(r, text);
+                    }
+                }
+                return node;
+            }
+            /**
+             * conversion of sort unicode escapes with spaces like `\33 ` (and longer) into
+             * expanded form that doesn't require trailing space `\000033`
+             * @param {string} s
+             * @return {string}
+             */
+            function _expandUnicodeEscapes(s) {
+                return s.replace(/\\([0-9a-f]{1,6})\s/gi, function () {
+                    var code = arguments[1], repeat = 6 - code.length;
+                    while (repeat--) {
+                        code = '0' + code;
+                    }
+                    return '\\' + code;
+                });
+            }
+            /** @enum {number} */
+            var types = {
+                STYLE_RULE: 1,
+                KEYFRAMES_RULE: 7,
+                MEDIA_RULE: 4,
+                MIXIN_RULE: 1000
+            };
+            var OPEN_BRACE = '{';
+            var CLOSE_BRACE = '}';
+            // helper regexp's
+            var RX = {
+                comments: /\/\*[^*]*\*+([^/*][^*]*\*+)*\//gim,
+                port: /@import[^;]*;/gim,
+                customProp: /(?:^[^;\-\s}]+)?--[^;{}]*?:[^{};]*?(?:[;\n]|$)/gim,
+                mixinProp: /(?:^[^;\-\s}]+)?--[^;{}]*?:[^{};]*?{[^}]*?}(?:[;\n]|$)?/gim,
+                mixinApply: /@apply\s*\(?[^);]*\)?\s*(?:[;\n]|$)?/gim,
+                varApply: /[^;:]*?:[^;]*?var\([^;]*\)(?:[;\n]|$)?/gim,
+                keyframesRule: /^@[^\s]*keyframes/,
+                multipleSpaces: /\s+/g
+            };
+            var VAR_START = '--';
+            var MEDIA_START = '@media';
+            var AT_START = '@';
+            function findRegex(regex, cssText, offset) {
+                regex['lastIndex'] = 0;
+                var r = cssText.substring(offset).match(regex);
+                if (r) {
+                    var start = offset + r['index'];
+                    return {
+                        start: start,
+                        end: start + r[0].length
+                    };
+                }
+                return null;
+            }
+            var VAR_USAGE_START = /\bvar\(/;
+            var VAR_ASSIGN_START = /\B--[\w-]+\s*:/;
+            var COMMENTS = /\/\*[^*]*\*+([^/*][^*]*\*+)*\//gim;
+            var TRAILING_LINES = /^[\t ]+\n/gm;
+            function resolveVar(props, prop, fallback) {
+                if (props[prop]) {
+                    return props[prop];
+                }
+                if (fallback) {
+                    return executeTemplate(fallback, props);
+                }
+                return '';
+            }
+            function findVarEndIndex(cssText, offset) {
+                var count = 0;
+                var i = offset;
+                for (; i < cssText.length; i++) {
+                    var c = cssText[i];
+                    if (c === '(') {
+                        count++;
+                    }
+                    else if (c === ')') {
+                        count--;
+                        if (count <= 0) {
+                            return i + 1;
+                        }
+                    }
+                }
+                return i;
+            }
+            function parseVar(cssText, offset) {
+                var varPos = findRegex(VAR_USAGE_START, cssText, offset);
+                if (!varPos) {
+                    return null;
+                }
+                var endVar = findVarEndIndex(cssText, varPos.start);
+                var varContent = cssText.substring(varPos.end, endVar - 1);
+                var _a = varContent.split(','), propName = _a[0], fallback = _a.slice(1);
+                return {
+                    start: varPos.start,
+                    end: endVar,
+                    propName: propName.trim(),
+                    fallback: fallback.length > 0 ? fallback.join(',').trim() : undefined
+                };
+            }
+            function compileVar(cssText, template, offset) {
+                var varMeta = parseVar(cssText, offset);
+                if (!varMeta) {
+                    template.push(cssText.substring(offset, cssText.length));
+                    return cssText.length;
+                }
+                var propName = varMeta.propName;
+                var fallback = varMeta.fallback != null ? compileTemplate(varMeta.fallback) : undefined;
+                template.push(cssText.substring(offset, varMeta.start), function (params) { return resolveVar(params, propName, fallback); });
+                return varMeta.end;
+            }
+            function executeTemplate(template, props) {
+                var final = '';
+                for (var i = 0; i < template.length; i++) {
+                    var s = template[i];
+                    final += (typeof s === 'string')
+                        ? s
+                        : s(props);
+                }
+                return final;
+            }
+            function findEndValue(cssText, offset) {
+                var onStr = false;
+                var double = false;
+                var i = offset;
+                for (; i < cssText.length; i++) {
+                    var c = cssText[i];
+                    if (onStr) {
+                        if (double && c === '"') {
+                            onStr = false;
+                        }
+                        if (!double && c === '\'') {
+                            onStr = false;
+                        }
+                    }
+                    else {
+                        if (c === '"') {
+                            onStr = true;
+                            double = true;
+                        }
+                        else if (c === '\'') {
+                            onStr = true;
+                            double = false;
+                        }
+                        else if (c === ';') {
+                            return i + 1;
+                        }
+                        else if (c === '}') {
+                            return i;
+                        }
+                    }
+                }
+                return i;
+            }
+            function removeCustomAssigns(cssText) {
+                var final = '';
+                var offset = 0;
+                while (true) {
+                    var assignPos = findRegex(VAR_ASSIGN_START, cssText, offset);
+                    var start = assignPos ? assignPos.start : cssText.length;
+                    final += cssText.substring(offset, start);
+                    if (assignPos) {
+                        offset = findEndValue(cssText, start);
+                    }
+                    else {
+                        break;
+                    }
+                }
+                return final;
+            }
+            function compileTemplate(cssText) {
+                var index = 0;
+                cssText = cssText.replace(COMMENTS, '');
+                cssText = removeCustomAssigns(cssText)
+                    .replace(TRAILING_LINES, '');
+                var segments = [];
+                while (index < cssText.length) {
+                    index = compileVar(cssText, segments, index);
+                }
+                return segments;
+            }
+            function resolveValues(selectors) {
+                var props = {};
+                selectors.forEach(function (selector) {
+                    selector.declarations.forEach(function (dec) {
+                        props[dec.prop] = dec.value;
+                    });
+                });
+                var propsValues = {};
+                var entries = Object.entries(props);
+                var _loop_1 = function (i) {
+                    var dirty = false;
+                    entries.forEach(function (_a) {
+                        var key = _a[0], value = _a[1];
+                        var propValue = executeTemplate(value, propsValues);
+                        if (propValue !== propsValues[key]) {
+                            propsValues[key] = propValue;
+                            dirty = true;
+                        }
+                    });
+                    if (!dirty) {
+                        return "break";
+                    }
+                };
+                for (var i = 0; i < 10; i++) {
+                    var state_1 = _loop_1();
+                    if (state_1 === "break")
+                        break;
+                }
+                return propsValues;
+            }
+            function getSelectors(root, index) {
+                if (index === void 0) {
+                    index = 0;
+                }
+                if (!root.rules) {
+                    return [];
+                }
+                var selectors = [];
+                root.rules
+                    .filter(function (rule) { return rule.type === types.STYLE_RULE; })
+                    .forEach(function (rule) {
+                    var declarations = getDeclarations(rule.cssText);
+                    if (declarations.length > 0) {
+                        rule.parsedSelector.split(',').forEach(function (selector) {
+                            selector = selector.trim();
+                            selectors.push({
+                                selector: selector,
+                                declarations: declarations,
+                                specificity: computeSpecificity(),
+                                nu: index
+                            });
+                        });
+                    }
+                    index++;
+                });
+                return selectors;
+            }
+            function computeSpecificity(_selector) {
+                return 1;
+            }
+            var IMPORTANT = '!important';
+            var FIND_DECLARATIONS = /(?:^|[;\s{]\s*)(--[\w-]*?)\s*:\s*(?:((?:'(?:\\'|.)*?'|"(?:\\"|.)*?"|\([^)]*?\)|[^};{])+)|\{([^}]*)\}(?:(?=[;\s}])|$))/gm;
+            function getDeclarations(cssText) {
+                var declarations = [];
+                var xArray;
+                while (xArray = FIND_DECLARATIONS.exec(cssText.trim())) {
+                    var _a = normalizeValue(xArray[2]), value = _a.value, important = _a.important;
+                    declarations.push({
+                        prop: xArray[1].trim(),
+                        value: compileTemplate(value),
+                        important: important,
+                    });
+                }
+                return declarations;
+            }
+            function normalizeValue(value) {
+                var regex = /\s+/gim;
+                value = value.replace(regex, ' ').trim();
+                var important = value.endsWith(IMPORTANT);
+                if (important) {
+                    value = value.substr(0, value.length - IMPORTANT.length).trim();
+                }
+                return {
+                    value: value,
+                    important: important
+                };
+            }
+            function getActiveSelectors(hostEl, hostScopeMap, globalScopes) {
+                // computes the css scopes that might affect this particular element
+                // avoiding using spread arrays to avoid ts helper fns when in es5
+                var scopes = [];
+                var scopesForElement = getScopesForElement(hostScopeMap, hostEl);
+                // globalScopes are always took into account
+                globalScopes.forEach(function (s) { return scopes.push(s); });
+                // the parent scopes are computed by walking parent dom until <html> is reached
+                scopesForElement.forEach(function (s) { return scopes.push(s); });
+                // each scope might have an array of associated selectors
+                // let's flatten the complete array of selectors from all the scopes
+                var selectorSet = getSelectorsForScopes(scopes);
+                // we filter to only the selectors that matches the hostEl
+                var activeSelectors = selectorSet.filter(function (selector) { return matches(hostEl, selector.selector); });
+                // sort selectors by specifity
+                return sortSelectors(activeSelectors);
+            }
+            function getScopesForElement(hostTemplateMap, node) {
+                var scopes = [];
+                while (node) {
+                    var scope = hostTemplateMap.get(node);
+                    if (scope) {
+                        scopes.push(scope);
+                    }
+                    node = node.parentElement;
+                }
+                return scopes;
+            }
+            function getSelectorsForScopes(scopes) {
+                var selectors = [];
+                scopes.forEach(function (scope) {
+                    selectors.push.apply(selectors, scope.selectors);
+                });
+                return selectors;
+            }
+            function sortSelectors(selectors) {
+                selectors.sort(function (a, b) {
+                    if (a.specificity === b.specificity) {
+                        return a.nu - b.nu;
+                    }
+                    return a.specificity - b.specificity;
+                });
+                return selectors;
+            }
+            function matches(el, selector) {
+                return selector === ':root' || selector === 'html' || el.matches(selector);
+            }
+            function parseCSS(original) {
+                var ast = parse(original);
+                var template = compileTemplate(original);
+                var selectors = getSelectors(ast);
+                return {
+                    original: original,
+                    template: template,
+                    selectors: selectors,
+                    usesCssVars: template.length > 1
+                };
+            }
+            function addGlobalStyle(globalScopes, styleEl) {
+                var css = parseCSS(styleEl.innerHTML);
+                css.styleEl = styleEl;
+                globalScopes.push(css);
+            }
+            function updateGlobalScopes(scopes) {
+                var selectors = getSelectorsForScopes(scopes);
+                var props = resolveValues(selectors);
+                scopes.forEach(function (scope) {
+                    if (scope.usesCssVars) {
+                        scope.styleEl.innerHTML = executeTemplate(scope.template, props);
+                    }
+                });
+            }
+            function reScope(scope, scopeId) {
+                var template = scope.template.map(function (segment) {
+                    return (typeof segment === 'string')
+                        ? replaceScope(segment, scope.scopeId, scopeId)
+                        : segment;
+                });
+                var selectors = scope.selectors.map(function (sel) {
+                    return Object.assign({}, sel, { selector: replaceScope(sel.selector, scope.scopeId, scopeId) });
+                });
+                return Object.assign({}, scope, { template: template,
+                    selectors: selectors,
+                    scopeId: scopeId });
+            }
+            function replaceScope(original, oldScopeId, newScopeId) {
+                original = replaceAll(original, "\\." + oldScopeId, "." + newScopeId);
+                return original;
+            }
+            function replaceAll(input, find, replace) {
+                return input.replace(new RegExp(find, 'g'), replace);
+            }
+            function loadDocument(doc, globalScopes) {
+                loadDocumentStyles(doc, globalScopes);
+                return loadDocumentLinks(doc, globalScopes);
+            }
+            function loadDocumentLinks(doc, globalScopes) {
+                var promises = [];
+                var linkElms = doc.querySelectorAll('link[rel="stylesheet"][href]');
+                for (var i = 0; i < linkElms.length; i++) {
+                    promises.push(addGlobalLink(doc, globalScopes, linkElms[i]));
+                }
+                return Promise.all(promises);
+            }
+            function loadDocumentStyles(doc, globalScopes) {
+                var styleElms = doc.querySelectorAll('style:not([data-styles])');
+                for (var i = 0; i < styleElms.length; i++) {
+                    addGlobalStyle(globalScopes, styleElms[i]);
+                }
+            }
+            function addGlobalLink(doc, globalScopes, linkElm) {
+                var url = linkElm.href;
+                return fetch(url).then(function (rsp) { return rsp.text(); }).then(function (text) {
+                    if (hasCssVariables(text) && linkElm.parentNode) {
+                        if (hasRelativeUrls(text)) {
+                            text = fixRelativeUrls(text, url);
+                        }
+                        var styleEl = doc.createElement('style');
+                        styleEl.setAttribute('data-styles', '');
+                        styleEl.innerHTML = text;
+                        addGlobalStyle(globalScopes, styleEl);
+                        linkElm.parentNode.insertBefore(styleEl, linkElm);
+                        linkElm.remove();
+                    }
+                }).catch(function (err) {
+                    console.error(err);
+                });
+            }
+            // This regexp tries to determine when a variable is declared, for example:
+            //
+            // .my-el { --highlight-color: green; }
+            //
+            // but we don't want to trigger when a classname uses "--" or a pseudo-class is
+            // used. We assume that the only characters that can preceed a variable
+            // declaration are "{", from an opening block, ";" from a preceeding rule, or a
+            // space. This prevents the regexp from matching a word in a selector, since
+            // they would need to start with a "." or "#". (We assume element names don't
+            // start with "--").
+            var CSS_VARIABLE_REGEXP = /[\s;{]--[-a-zA-Z0-9]+\s*:/m;
+            function hasCssVariables(css) {
+                return css.indexOf('var(') > -1 || CSS_VARIABLE_REGEXP.test(css);
+            }
+            // This regexp find all url() usages with relative urls
+            var CSS_URL_REGEXP = /url[\s]*\([\s]*['"]?(?![http|/])([^\'\"\)]*)[\s]*['"]?\)[\s]*/gim;
+            function hasRelativeUrls(css) {
+                CSS_URL_REGEXP.lastIndex = 0;
+                return CSS_URL_REGEXP.test(css);
+            }
+            function fixRelativeUrls(css, originalUrl) {
+                // get the basepath from the original import url
+                var basePath = originalUrl.replace(/[^/]*$/, '');
+                // replace the relative url, with the new relative url
+                return css.replace(CSS_URL_REGEXP, function (fullMatch, url) {
+                    // rhe new relative path is the base path + uri
+                    // TODO: normalize relative URL
+                    var relativeUrl = basePath + url;
+                    return fullMatch.replace(url, relativeUrl);
+                });
+            }
+            var CustomStyle = /** @class */ (function () {
+                function CustomStyle(win, doc) {
+                    this.win = win;
+                    this.doc = doc;
+                    this.count = 0;
+                    this.hostStyleMap = new WeakMap();
+                    this.hostScopeMap = new WeakMap();
+                    this.globalScopes = [];
+                    this.scopesMap = new Map();
+                }
+                CustomStyle.prototype.initShim = function () {
+                    var _this = this;
+                    return new Promise(function (resolve) {
+                        _this.win.requestAnimationFrame(function () {
+                            loadDocument(_this.doc, _this.globalScopes).then(function () { return resolve(); });
+                        });
+                    });
+                };
+                CustomStyle.prototype.addLink = function (linkEl) {
+                    var _this = this;
+                    return addGlobalLink(this.doc, this.globalScopes, linkEl).then(function () {
+                        _this.updateGlobal();
+                    });
+                };
+                CustomStyle.prototype.addGlobalStyle = function (styleEl) {
+                    addGlobalStyle(this.globalScopes, styleEl);
+                    this.updateGlobal();
+                };
+                CustomStyle.prototype.createHostStyle = function (hostEl, cssScopeId, cssText, isScoped) {
+                    if (this.hostScopeMap.has(hostEl)) {
+                        throw new Error('host style already created');
+                    }
+                    var baseScope = this.registerHostTemplate(cssText, cssScopeId, isScoped);
+                    var styleEl = this.doc.createElement('style');
+                    if (!baseScope.usesCssVars) {
+                        // This component does not use (read) css variables
+                        styleEl.innerHTML = cssText;
+                    }
+                    else if (isScoped) {
+                        // This component is dynamic: uses css var and is scoped
+                        styleEl['s-sc'] = cssScopeId = baseScope.scopeId + "-" + this.count;
+                        styleEl.innerHTML = '/*needs update*/';
+                        this.hostStyleMap.set(hostEl, styleEl);
+                        this.hostScopeMap.set(hostEl, reScope(baseScope, cssScopeId));
+                        this.count++;
+                    }
+                    else {
+                        // This component uses css vars, but it's no-encapsulation (global static)
+                        baseScope.styleEl = styleEl;
+                        if (!baseScope.usesCssVars) {
+                            styleEl.innerHTML = executeTemplate(baseScope.template, {});
+                        }
+                        this.globalScopes.push(baseScope);
+                        this.updateGlobal();
+                        this.hostScopeMap.set(hostEl, baseScope);
+                    }
+                    return styleEl;
+                };
+                CustomStyle.prototype.removeHost = function (hostEl) {
+                    var css = this.hostStyleMap.get(hostEl);
+                    if (css) {
+                        css.remove();
+                    }
+                    this.hostStyleMap.delete(hostEl);
+                    this.hostScopeMap.delete(hostEl);
+                };
+                CustomStyle.prototype.updateHost = function (hostEl) {
+                    var scope = this.hostScopeMap.get(hostEl);
+                    if (scope && scope.usesCssVars && scope.isScoped) {
+                        var styleEl = this.hostStyleMap.get(hostEl);
+                        if (styleEl) {
+                            var selectors = getActiveSelectors(hostEl, this.hostScopeMap, this.globalScopes);
+                            var props = resolveValues(selectors);
+                            styleEl.innerHTML = executeTemplate(scope.template, props);
+                        }
+                    }
+                };
+                CustomStyle.prototype.updateGlobal = function () {
+                    updateGlobalScopes(this.globalScopes);
+                };
+                CustomStyle.prototype.registerHostTemplate = function (cssText, scopeId, isScoped) {
+                    var scope = this.scopesMap.get(scopeId);
+                    if (!scope) {
+                        scope = parseCSS(cssText);
+                        scope.scopeId = scopeId;
+                        scope.isScoped = isScoped;
+                        this.scopesMap.set(scopeId, scope);
+                    }
+                    return scope;
+                };
+                return CustomStyle;
+            }());
+            var win = window;
+            function needsShim() {
+                return !(win.CSS && win.CSS.supports && win.CSS.supports('color', 'var(--c)'));
+            }
+            if (!win.__stencil_cssshim && needsShim()) {
+                win.__stencil_cssshim = new CustomStyle(win, document);
+            }
+        }
+    };
+});
