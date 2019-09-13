@@ -44,28 +44,31 @@ class rewardData {
     }
 }
 // Product get through JSON
-function getProductJson(limit = 0, url = "") {
-    let productJson = [];
+function loadProductJson(url) {
     // get json response
-    if (!url.trim()) {
-        url = window.location.origin + window.location.pathname + "home.productfeed.json";
-        if (window.location.hostname === "localhost" || window.location.hostname.indexOf("github.io") > 0) {
-            url = window.location.origin + window.location.pathname + "assets/demo.json";
-        }
+    if (!url) {
+        url = "https://anandprajapati1.github.io/shipDeploy/assets/demo.json";
     }
+    // var url = window.location.origin + window.location.pathname + "home.productfeed.json";
+    // if (window.location.hostname === "localhost" || window.location.hostname.indexOf("github.io") > 0) {
+    //   url = window.location.origin + window.location.pathname + "assets/demo.json";
+    // }
     return fetch(url)
         .then((response) => response.json())
         .then(response => {
-        limit = limit == 0 ? response.locales[0].products.product.length : limit;
-        for (var i = 0; i < limit; i++) {
+        let productJson = [];
+        for (var i = 0; i < response.locales[0].products.product.length; i++) {
             productJson.push({
                 name: response.locales[0].products.product[i].name,
                 image: response.locales[0].products.product[i].imageUrl,
                 url: response.locales[0].products.product[i].productPageUrl
             });
         }
-        return productJson;
+        localStorage.setItem("pr_feed", JSON.stringify(productJson));
     });
+}
+function getProducts(limit = 0) {
+    return JSON.parse(localStorage.getItem("pr_feed")).slice(0, limit);
 }
 
 const BubbleItem = class {
@@ -184,6 +187,7 @@ const GameItem = class {
     }
     /** To trigger game start from popup module while switching to game screen */
     async startGame() {
+        this._luckyProductList = getProducts(this.levels.length);
         this._userSavedData = getUserData();
         this.resetLevel();
         this.currentLevel = this.levels[this.currentLevelNo];
@@ -246,9 +250,7 @@ const GameItem = class {
     }
     // Product get through JSON
     componentDidLoad() {
-        getProductJson(this.levels.length).then((d) => {
-            this._luckyProductList = d;
-        });
+        // this._luckyProductList = getProducts(this.levels.length);
     }
     /** To initialize alevel data.
      * Will be called on start of each level */
@@ -318,7 +320,7 @@ const GameItem = class {
     }
     render() {
         return [
-            h("div", { class: (this.isGameOver ? "hide" : "") + " score" }, h("audio", { src: "https://anandprajapati1.github.io/shipDeploy/assets/media/poped.mp3", ref: (el) => this.popedAudioTag = el, class: "hide" }), h("span", { class: "life life-" + this.life }, h("span", null), h("span", null), h("span", null), h("span", null), h("span", null)), h("span", { class: "score-label" }, "POINTS"), h("span", { class: "score-text" }, this.score), h("div", { class: (this.showLuckyPopup ? "show" : "") + " product-win " }, "You got one free product")),
+            h("div", { class: (this.isGameOver ? "hide" : "") + " score" }, h("audio", { src: "https://anandprajapati1.github.io/shipDeploy/assets/media/poped.mp3", ref: (el) => this.popedAudioTag = el, class: "hide" }), h("span", { class: "life life-" + this.life }, h("span", null), h("span", null), h("span", null), h("span", null), h("span", null)), h("span", { class: "score-label" }, "POINTS"), h("span", { class: "score-text" }, this.score), h("div", { class: (this.showLuckyPopup ? "show" : "") + " product-win " }, "You got a free sample product")),
             h("button", { class: (this.isPaused || this.isGameOver ? "hide" : "") + " pause-btn", onClick: this.pauseGame.bind(this) }, "Pause"),
             h("div", { class: (this.isPaused ? "paused" : "") + " game-item " + (this.isGameOver ? "game-over" : "game-playing"), ref: (el) => this.gameElement = el }),
             (() => {
@@ -448,6 +450,8 @@ const RedeemPoint = class {
         this.btnClicked = createEvent(this, "btnClicked", 7);
     }
     async init() {
+        this.productJson = getProducts(4);
+        this.dataUpdated = true;
         this._userData = getUserData();
         this._tabPanel.initTabPanel();
     }
@@ -466,41 +470,6 @@ const RedeemPoint = class {
         this._userData = getUserData();
     }
     componentDidLoad() {
-        getProductJson(4).then((d) => {
-            this.productJson = d;
-            this.dataUpdated = true;
-        });
-        // // get json response
-        // var productJsonUrl = window.location + "/home.productfeed.json";
-        // if (window.location.hostname === "localhost" || window.location.hostname.indexOf("github.io")>0) {
-        //   productJsonUrl = window.location + "/assets/demo.json";
-        // }
-        // console.log(productJsonUrl);
-        // fetch("https://author-starterkit.unileversolutions.com/content/brands/seventh-generation/gb/en/home.productfeed.json",{
-        //   method: 'POST',
-        //   headers: {
-        //     'Accept': 'application/json',
-        //     'Content-Type': 'application/json',
-        //     'Origin': '',
-        //     'Host': 'https://author-starterkit.unileversolutions.com'
-        //   },
-        //   body: JSON.stringify({
-        //     'client_id': 'unilever',
-        //     'client_secret': 'unilever',
-        //     'grant_type': 'Dr2gaYUM6ch_sPAsw2vEPHaSwEmata3A'
-        //   })
-        //   })
-        //   .then((response: Response) => response.json())
-        //   .then(response => {
-        //     for (var i = 0; i < 4; i++) {
-        //       this.productJson.push({
-        //         name: response.locales[0].products.product[i].name,
-        //         image: response.locales[0].products.product[i].imageUrl,
-        //         url: response.locales[0].products.product[i].productPageUrl
-        //       });
-        //     }
-        //     this.dataUpdated = true;
-        //   });
     }
     render() {
         return (h(Host, { ref: el => this._parentElement = el }, h("div", { class: "redeem-panel" }, h("div", { class: "redeem-point" }, "Points : ", h("span", { class: "" }, this._userData.points)), h("tab-panel", { ref: el => this._tabPanel = el }), h("div", { class: "product-section" }, h("div", { class: "title" }, "You can use coupon code in below product also"), (() => {
@@ -510,9 +479,9 @@ const RedeemPoint = class {
             else {
                 return h("div", { class: "no-product" }, "No Product Avalable");
             }
-        })()), h("nav-item", { "replay-disabled": "true" }))));
+        })(), h("p", { class: (this.productJson.length ? "" : "hide") + " text-center" }, h("a", { class: "button", href: "https://www.lovehomeandplanet.com/us/en/products.html", target: "_blank" }, "Browse All"))), h("nav-item", { "replay-disabled": "true" }))));
     }
-    static get style() { return ".hide{display:none!important}button{outline:none}.redeem-panel{display:-ms-flexbox;display:flex;-ms-flex-pack:center;justify-content:center;-ms-flex-direction:column;flex-direction:column;width:100%;border-radius:10px;background:rgba(95,31,100,.9);-webkit-box-shadow:inset 0 0 14px 0 #fff;-moz-box-shadow:inset 0 0 14px 0 #fff;box-shadow:inset 0 0 14px 0 #fff}.redeem-point{font-size:27px;line-height:30px;text-transform:uppercase;margin:25px auto 5px}\@media (min-width:992px){.redeem-point{font-size:40px}}.no-product{margin:0 0 40px;text-transform:uppercase;border:1px solid rgba(95,31,100,.9);padding:20px;border-left-width:0;border-right-width:0}.product-section{background:rgba(50,16,53,.7)}.product-section .title{font-size:20px;text-transform:uppercase;text-align:center;margin:30px 0;padding:10px}\@media (min-width:992px){.product-section .title{padding:15px;font-size:30px}}.product-section .product-item{display:-ms-inline-flexbox;display:inline-flex;-ms-flex-direction:column;flex-direction:column;width:calc((100% - 20px)/ 3);margin:0 20px 30px}\@media (min-width:992px){.product-section .product-item{width:calc((100% - 20px)/ 5)}}.product-section .product-item a{color:#fff;text-transform:uppercase;text-decoration:none;font-size:14px}\@media (min-width:768px){.product-section .product-item a{font-size:20px}}.product-section .product-item img{max-width:100%;border:2px solid #fff;border-radius:10px}"; }
+    static get style() { return ".hide{display:none!important}.text-center{text-align:center}button{outline:none}.redeem-panel{display:-ms-flexbox;display:flex;-ms-flex-pack:center;justify-content:center;-ms-flex-direction:column;flex-direction:column;width:100%;border-radius:10px;background:rgba(95,31,100,.9);-webkit-box-shadow:inset 0 0 14px 0 #fff;-moz-box-shadow:inset 0 0 14px 0 #fff;box-shadow:inset 0 0 14px 0 #fff}.redeem-point{font-size:27px;line-height:30px;text-transform:uppercase;margin:25px auto 5px}\@media (min-width:992px){.redeem-point{font-size:40px}}.no-product{margin:0 0 40px;text-transform:uppercase;border:1px solid rgba(95,31,100,.9);padding:20px;border-left-width:0;border-right-width:0}.product-section{background:rgba(50,16,53,.7)}.product-section .title{font-size:20px;text-transform:uppercase;text-align:center;margin:30px 0;padding:10px}\@media (min-width:992px){.product-section .title{padding:15px;font-size:30px}}.product-section .product-item{display:-ms-inline-flexbox;display:inline-flex;-ms-flex-direction:column;flex-direction:column;width:calc((100% - 20px)/ 3);margin:0 20px 30px}\@media (min-width:992px){.product-section .product-item{width:calc((100% - 20px)/ 5)}}.product-section .product-item a{color:#fff;text-transform:uppercase;text-decoration:none;font-size:14px}\@media (min-width:768px){.product-section .product-item a{font-size:20px}}.product-section .product-item img{max-width:100%;border:2px solid #fff;border-radius:10px}.button{background:#d2264e;border-radius:10px;border-style:solid;border-width:3px;border-color:#fff;-webkit-box-sizing:border-box;box-sizing:border-box;color:#fff;cursor:pointer;text-transform:none;font-family:cargoD,Trebuchet MS,Arial,sans-serif;font-size:14px;line-height:1;padding:5px 10px;text-decoration:none;background:#3fae48}\@media (min-width:992px){.button{font-size:27px}}"; }
 };
 
 const ScoreBoard = class {
@@ -615,6 +584,7 @@ const VaUtil = class {
         linkNode.rel = "stylesheet";
         linkNode.href = "https://anandprajapati1.github.io/shipDeploy/assets/fonts/font.css";
         document.head.appendChild(linkNode);
+        loadProductJson(this.dataSrc);
     }
     // //After rendering
     // componentDidLoad() {

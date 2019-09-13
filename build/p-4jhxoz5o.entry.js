@@ -47,7 +47,7 @@ class rewardData {
 function loadProductJson(url) {
     // get json response
     if (!url) {
-        url = window.location.origin + window.location.pathname + "assets/demo.json";
+        url = "https://anandprajapati1.github.io/shipDeploy/assets/demo.json";
     }
     // var url = window.location.origin + window.location.pathname + "home.productfeed.json";
     // if (window.location.hostname === "localhost" || window.location.hostname.indexOf("github.io") > 0) {
@@ -56,7 +56,7 @@ function loadProductJson(url) {
     return fetch(url)
         .then((response) => response.json())
         .then(response => {
-        var productJson = [];
+        let productJson = [];
         for (var i = 0; i < response.locales[0].products.product.length; i++) {
             productJson.push({
                 name: response.locales[0].products.product[i].name,
@@ -470,44 +470,11 @@ const RedeemPoint = class {
         this._userData = getUserData();
     }
     componentDidLoad() {
-        // this.productJson = getProduccts(4);
-        // this.dataUpdated = true;
-        // // get json response
-        // var productJsonUrl = window.location + "/home.productfeed.json";
-        // if (window.location.hostname === "localhost" || window.location.hostname.indexOf("github.io")>0) {
-        //   productJsonUrl = window.location + "/assets/demo.json";
-        // }
-        // console.log(productJsonUrl);
-        // fetch("https://author-starterkit.unileversolutions.com/content/brands/seventh-generation/gb/en/home.productfeed.json",{
-        //   method: 'POST',
-        //   headers: {
-        //     'Accept': 'application/json',
-        //     'Content-Type': 'application/json',
-        //     'Origin': '',
-        //     'Host': 'https://author-starterkit.unileversolutions.com'
-        //   },
-        //   body: JSON.stringify({
-        //     'client_id': 'unilever',
-        //     'client_secret': 'unilever',
-        //     'grant_type': 'Dr2gaYUM6ch_sPAsw2vEPHaSwEmata3A'
-        //   })
-        //   })
-        //   .then((response: Response) => response.json())
-        //   .then(response => {
-        //     for (var i = 0; i < 4; i++) {
-        //       this.productJson.push({
-        //         name: response.locales[0].products.product[i].name,
-        //         image: response.locales[0].products.product[i].imageUrl,
-        //         url: response.locales[0].products.product[i].productPageUrl
-        //       });
-        //     }
-        //     this.dataUpdated = true;
-        //   });
     }
     render() {
         return (h(Host, { ref: el => this._parentElement = el }, h("div", { class: "redeem-panel" }, h("div", { class: "redeem-point" }, "Points : ", h("span", { class: "" }, this._userData.points)), h("tab-panel", { ref: el => this._tabPanel = el }), h("div", { class: "product-section" }, h("div", { class: "title" }, "You can use coupon code in below product also"), (() => {
             if (this.productJson.length) {
-                return this.dataUpdated && this.productJson.map(productItem => h("div", { class: "product-item" }, h("a", { href: productItem.url, target: "_black", onClick: () => this.btnClicked.emit() }, h("img", { src: productItem.image, title: productItem.name, alt: productItem.name }), h("span", null, productItem.name))));
+                return this.dataUpdated && this.productJson.map(productItem => h("div", { class: "product-item" }, h("a", { href: productItem.url, target: "_black", onClick: () => this.btnClicked.emit() }, h("img", { src: productItem.image, title: productItem.name, alt: productItem.name }), h("span", null, productItem.name)), h("p", { class: "text-center" }, h("a", { href: "https://www.lovehomeandplanet.com/us/en/home.html", target: "_blank" }, "Browse All"))));
             }
             else {
                 return h("div", { class: "no-product" }, "No Product Avalable");

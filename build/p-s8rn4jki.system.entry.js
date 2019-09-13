@@ -91,27 +91,32 @@ System.register(['./p-9c067a18.system.js'], function (exports) {
                 return rewardData;
             }());
             // Product get through JSON
-            function getProductJson(limit) {
-                if (limit === void 0) { limit = 0; }
-                var productJson = [];
+            function loadProductJson(url) {
                 // get json response
-                var productJsonUrl = window.location.origin + window.location.pathname + "home.productfeed.json";
-                if (window.location.hostname === "localhost" || window.location.hostname.indexOf("github.io") > 0) {
-                    productJsonUrl = window.location.origin + window.location.pathname + "assets/demo.json";
+                if (!url) {
+                    url = "https://anandprajapati1.github.io/shipDeploy/assets/demo.json";
                 }
-                return fetch(productJsonUrl)
+                // var url = window.location.origin + window.location.pathname + "home.productfeed.json";
+                // if (window.location.hostname === "localhost" || window.location.hostname.indexOf("github.io") > 0) {
+                //   url = window.location.origin + window.location.pathname + "assets/demo.json";
+                // }
+                return fetch(url)
                     .then(function (response) { return response.json(); })
                     .then(function (response) {
-                    limit = limit == 0 ? response.locales[0].products.product.length : limit;
-                    for (var i = 0; i < limit; i++) {
+                    var productJson = [];
+                    for (var i = 0; i < response.locales[0].products.product.length; i++) {
                         productJson.push({
                             name: response.locales[0].products.product[i].name,
                             image: response.locales[0].products.product[i].imageUrl,
                             url: response.locales[0].products.product[i].productPageUrl
                         });
                     }
-                    return productJson;
+                    localStorage.setItem("pr_feed", JSON.stringify(productJson));
                 });
+            }
+            function getProducts(limit) {
+                if (limit === void 0) { limit = 0; }
+                return JSON.parse(localStorage.getItem("pr_feed")).slice(0, limit);
             }
             var BubbleItem = exports('bubble_item', /** @class */ (function () {
                 function class_1(hostRef) {
@@ -252,6 +257,7 @@ System.register(['./p-9c067a18.system.js'], function (exports) {
                 class_2.prototype.startGame = function () {
                     return __awaiter(this, void 0, void 0, function () {
                         return __generator(this, function (_a) {
+                            this._luckyProductList = getProducts(this.levels.length);
                             this._userSavedData = getUserData();
                             this.resetLevel();
                             this.currentLevel = this.levels[this.currentLevelNo];
@@ -318,10 +324,7 @@ System.register(['./p-9c067a18.system.js'], function (exports) {
                 };
                 // Product get through JSON
                 class_2.prototype.componentDidLoad = function () {
-                    var _this = this;
-                    getProductJson(this.levels.length).then(function (d) {
-                        _this._luckyProductList = d;
-                    });
+                    // this._luckyProductList = getProducts(this.levels.length);
                 };
                 /** To initialize alevel data.
                  * Will be called on start of each level */
@@ -544,6 +547,8 @@ System.register(['./p-9c067a18.system.js'], function (exports) {
                 class_5.prototype.init = function () {
                     return __awaiter(this, void 0, void 0, function () {
                         return __generator(this, function (_a) {
+                            this.productJson = getProducts(4);
+                            this.dataUpdated = true;
                             this._userData = getUserData();
                             this._tabPanel.initTabPanel();
                             return [2 /*return*/];
@@ -565,42 +570,6 @@ System.register(['./p-9c067a18.system.js'], function (exports) {
                     this._userData = getUserData();
                 };
                 class_5.prototype.componentDidLoad = function () {
-                    var _this = this;
-                    getProductJson(4).then(function (d) {
-                        _this.productJson = d;
-                        _this.dataUpdated = true;
-                    });
-                    // // get json response
-                    // var productJsonUrl = window.location + "/home.productfeed.json";
-                    // if (window.location.hostname === "localhost" || window.location.hostname.indexOf("github.io")>0) {
-                    //   productJsonUrl = window.location + "/assets/demo.json";
-                    // }
-                    // console.log(productJsonUrl);
-                    // fetch("https://author-starterkit.unileversolutions.com/content/brands/seventh-generation/gb/en/home.productfeed.json",{
-                    //   method: 'POST',
-                    //   headers: {
-                    //     'Accept': 'application/json',
-                    //     'Content-Type': 'application/json',
-                    //     'Origin': '',
-                    //     'Host': 'https://author-starterkit.unileversolutions.com'
-                    //   },
-                    //   body: JSON.stringify({
-                    //     'client_id': 'unilever',
-                    //     'client_secret': 'unilever',
-                    //     'grant_type': 'Dr2gaYUM6ch_sPAsw2vEPHaSwEmata3A'
-                    //   })
-                    //   })
-                    //   .then((response: Response) => response.json())
-                    //   .then(response => {
-                    //     for (var i = 0; i < 4; i++) {
-                    //       this.productJson.push({
-                    //         name: response.locales[0].products.product[i].name,
-                    //         image: response.locales[0].products.product[i].imageUrl,
-                    //         url: response.locales[0].products.product[i].productPageUrl
-                    //       });
-                    //     }
-                    //     this.dataUpdated = true;
-                    //   });
                 };
                 class_5.prototype.render = function () {
                     var _this = this;
@@ -611,7 +580,7 @@ System.register(['./p-9c067a18.system.js'], function (exports) {
                         else {
                             return h("div", { class: "no-product" }, "No Product Avalable");
                         }
-                    })()), h("nav-item", { "replay-disabled": "true" }))));
+                    })(), h("p", { class: (this.productJson.length ? "" : "hide") + " text-center" }, h("a", { class: "button", href: "https://www.lovehomeandplanet.com/us/en/home.html", target: "_blank" }, "Browse All"))), h("nav-item", { "replay-disabled": "true" }))));
                 };
                 Object.defineProperty(class_5, "style", {
                     get: function () { return ".hide{display:none!important}button{outline:none}.redeem-panel{display:-ms-flexbox;display:flex;-ms-flex-pack:center;justify-content:center;-ms-flex-direction:column;flex-direction:column;width:100%;border-radius:10px;background:rgba(95,31,100,.9);-webkit-box-shadow:inset 0 0 14px 0 #fff;-moz-box-shadow:inset 0 0 14px 0 #fff;box-shadow:inset 0 0 14px 0 #fff}.redeem-point{font-size:27px;line-height:30px;text-transform:uppercase;margin:25px auto 5px}\@media (min-width:992px){.redeem-point{font-size:40px}}.no-product{margin:0 0 40px;text-transform:uppercase;border:1px solid rgba(95,31,100,.9);padding:20px;border-left-width:0;border-right-width:0}.product-section{background:rgba(50,16,53,.7)}.product-section .title{font-size:20px;text-transform:uppercase;text-align:center;margin:30px 0;padding:10px}\@media (min-width:992px){.product-section .title{padding:15px;font-size:30px}}.product-section .product-item{display:-ms-inline-flexbox;display:inline-flex;-ms-flex-direction:column;flex-direction:column;width:calc((100% - 20px)/ 3);margin:0 20px 30px}\@media (min-width:992px){.product-section .product-item{width:calc((100% - 20px)/ 5)}}.product-section .product-item a{color:#fff;text-transform:uppercase;text-decoration:none;font-size:14px}\@media (min-width:768px){.product-section .product-item a{font-size:20px}}.product-section .product-item img{max-width:100%;border:2px solid #fff;border-radius:10px}"; },
@@ -740,6 +709,7 @@ System.register(['./p-9c067a18.system.js'], function (exports) {
                     linkNode.rel = "stylesheet";
                     linkNode.href = "https://anandprajapati1.github.io/shipDeploy/assets/fonts/font.css";
                     document.head.appendChild(linkNode);
+                    loadProductJson(this.dataSrc);
                 };
                 // //After rendering
                 // componentDidLoad() {

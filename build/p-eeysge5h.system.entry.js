@@ -91,27 +91,32 @@ System.register(['./p-9c067a18.system.js'], function (exports) {
                 return rewardData;
             }());
             // Product get through JSON
-            function getProductJson(limit) {
-                if (limit === void 0) { limit = 0; }
-                var productJson = [];
+            function loadProductJson(url) {
                 // get json response
-                var productJsonUrl = window.location.origin + window.location.pathname + "home.productfeed.json";
-                if (window.location.hostname === "localhost" || window.location.hostname.indexOf("github.io") > 0) {
-                    productJsonUrl = window.location.origin + window.location.pathname + "assets/demo.json";
+                if (!url) {
+                    url = "https://anandprajapati1.github.io/shipDeploy/assets/demo.json";
                 }
-                return fetch(productJsonUrl)
+                // var url = window.location.origin + window.location.pathname + "home.productfeed.json";
+                // if (window.location.hostname === "localhost" || window.location.hostname.indexOf("github.io") > 0) {
+                //   url = window.location.origin + window.location.pathname + "assets/demo.json";
+                // }
+                return fetch(url)
                     .then(function (response) { return response.json(); })
                     .then(function (response) {
-                    limit = limit == 0 ? response.locales[0].products.product.length : limit;
-                    for (var i = 0; i < limit; i++) {
+                    var productJson = [];
+                    for (var i = 0; i < response.locales[0].products.product.length; i++) {
                         productJson.push({
                             name: response.locales[0].products.product[i].name,
                             image: response.locales[0].products.product[i].imageUrl,
                             url: response.locales[0].products.product[i].productPageUrl
                         });
                     }
-                    return productJson;
+                    localStorage.setItem("pr_feed", JSON.stringify(productJson));
                 });
+            }
+            function getProducts(limit) {
+                if (limit === void 0) { limit = 0; }
+                return JSON.parse(localStorage.getItem("pr_feed")).slice(0, limit);
             }
             var BubbleItem = exports('bubble_item', /** @class */ (function () {
                 function class_1(hostRef) {
@@ -252,6 +257,7 @@ System.register(['./p-9c067a18.system.js'], function (exports) {
                 class_2.prototype.startGame = function () {
                     return __awaiter(this, void 0, void 0, function () {
                         return __generator(this, function (_a) {
+                            this._luckyProductList = getProducts(this.levels.length);
                             this._userSavedData = getUserData();
                             this.resetLevel();
                             this.currentLevel = this.levels[this.currentLevelNo];
@@ -318,10 +324,7 @@ System.register(['./p-9c067a18.system.js'], function (exports) {
                 };
                 // Product get through JSON
                 class_2.prototype.componentDidLoad = function () {
-                    var _this = this;
-                    getProductJson(this.levels.length).then(function (d) {
-                        _this._luckyProductList = d;
-                    });
+                    // this._luckyProductList = getProducts(this.levels.length);
                 };
                 /** To initialize alevel data.
                  * Will be called on start of each level */
@@ -393,7 +396,7 @@ System.register(['./p-9c067a18.system.js'], function (exports) {
                 class_2.prototype.render = function () {
                     var _this = this;
                     return [
-                        h("div", { class: (this.isGameOver ? "hide" : "") + " score" }, h("audio", { src: "https://anandprajapati1.github.io/shipDeploy/assets/media/poped.mp3", ref: function (el) { return _this.popedAudioTag = el; }, class: "hide" }), h("span", { class: "life life-" + this.life }, h("span", null), h("span", null), h("span", null), h("span", null), h("span", null)), h("span", { class: "score-label" }, "POINTS"), h("span", { class: "score-text" }, this.score), h("div", { class: (this.showLuckyPopup ? "show" : "") + " product-win " }, "You got one free product")),
+                        h("div", { class: (this.isGameOver ? "hide" : "") + " score" }, h("audio", { src: "https://anandprajapati1.github.io/shipDeploy/assets/media/poped.mp3", ref: function (el) { return _this.popedAudioTag = el; }, class: "hide" }), h("span", { class: "life life-" + this.life }, h("span", null), h("span", null), h("span", null), h("span", null), h("span", null)), h("span", { class: "score-label" }, "POINTS"), h("span", { class: "score-text" }, this.score), h("div", { class: (this.showLuckyPopup ? "show" : "") + " product-win " }, "You got a free sample product")),
                         h("button", { class: (this.isPaused || this.isGameOver ? "hide" : "") + " pause-btn", onClick: this.pauseGame.bind(this) }, "Pause"),
                         h("div", { class: (this.isPaused ? "paused" : "") + " game-item " + (this.isGameOver ? "game-over" : "game-playing"), ref: function (el) { return _this.gameElement = el; } }),
                         (function () {
@@ -544,6 +547,8 @@ System.register(['./p-9c067a18.system.js'], function (exports) {
                 class_5.prototype.init = function () {
                     return __awaiter(this, void 0, void 0, function () {
                         return __generator(this, function (_a) {
+                            this.productJson = getProducts(4);
+                            this.dataUpdated = true;
                             this._userData = getUserData();
                             this._tabPanel.initTabPanel();
                             return [2 /*return*/];
@@ -565,48 +570,12 @@ System.register(['./p-9c067a18.system.js'], function (exports) {
                     this._userData = getUserData();
                 };
                 class_5.prototype.componentDidLoad = function () {
-                    var _this = this;
-                    getProductJson(4).then(function (d) {
-                        _this.productJson = d;
-                        _this.dataUpdated = true;
-                    });
-                    // // get json response
-                    // var productJsonUrl = window.location + "/home.productfeed.json";
-                    // if (window.location.hostname === "localhost" || window.location.hostname.indexOf("github.io")>0) {
-                    //   productJsonUrl = window.location + "/assets/demo.json";
-                    // }
-                    // console.log(productJsonUrl);
-                    // fetch("https://author-starterkit.unileversolutions.com/content/brands/seventh-generation/gb/en/home.productfeed.json",{
-                    //   method: 'POST',
-                    //   headers: {
-                    //     'Accept': 'application/json',
-                    //     'Content-Type': 'application/json',
-                    //     'Origin': '',
-                    //     'Host': 'https://author-starterkit.unileversolutions.com'
-                    //   },
-                    //   body: JSON.stringify({
-                    //     'client_id': 'unilever',
-                    //     'client_secret': 'unilever',
-                    //     'grant_type': 'Dr2gaYUM6ch_sPAsw2vEPHaSwEmata3A'
-                    //   })
-                    //   })
-                    //   .then((response: Response) => response.json())
-                    //   .then(response => {
-                    //     for (var i = 0; i < 4; i++) {
-                    //       this.productJson.push({
-                    //         name: response.locales[0].products.product[i].name,
-                    //         image: response.locales[0].products.product[i].imageUrl,
-                    //         url: response.locales[0].products.product[i].productPageUrl
-                    //       });
-                    //     }
-                    //     this.dataUpdated = true;
-                    //   });
                 };
                 class_5.prototype.render = function () {
                     var _this = this;
                     return (h(Host, { ref: function (el) { return _this._parentElement = el; } }, h("div", { class: "redeem-panel" }, h("div", { class: "redeem-point" }, "Points : ", h("span", { class: "" }, this._userData.points)), h("tab-panel", { ref: function (el) { return _this._tabPanel = el; } }), h("div", { class: "product-section" }, h("div", { class: "title" }, "You can use coupon code in below product also"), (function () {
                         if (_this.productJson.length) {
-                            return _this.dataUpdated && _this.productJson.map(function (productItem) { return h("div", { class: "product-item" }, h("a", { href: productItem.url, target: "_black", onClick: function () { return _this.btnClicked.emit(); } }, h("img", { src: productItem.image, title: productItem.name, alt: productItem.name }), h("span", null, productItem.name))); });
+                            return _this.dataUpdated && _this.productJson.map(function (productItem) { return h("div", { class: "product-item" }, h("a", { href: productItem.url, target: "_black", onClick: function () { return _this.btnClicked.emit(); } }, h("img", { src: productItem.image, title: productItem.name, alt: productItem.name }), h("span", null, productItem.name)), h("p", null, h("a", { href: "https://www.lovehomeandplanet.com/us/en/home.html", target: "_blank" }, "Browse All"))); });
                         }
                         else {
                             return h("div", { class: "no-product" }, "No Product Avalable");
@@ -740,6 +709,7 @@ System.register(['./p-9c067a18.system.js'], function (exports) {
                     linkNode.rel = "stylesheet";
                     linkNode.href = "https://anandprajapati1.github.io/shipDeploy/assets/fonts/font.css";
                     document.head.appendChild(linkNode);
+                    loadProductJson(this.dataSrc);
                 };
                 // //After rendering
                 // componentDidLoad() {

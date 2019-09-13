@@ -94,7 +94,7 @@ System.register(['./p-9c067a18.system.js'], function (exports) {
             function loadProductJson(url) {
                 // get json response
                 if (!url) {
-                    url = window.location.origin + window.location.pathname + "assets/demo.json";
+                    url = "https://anandprajapati1.github.io/shipDeploy/assets/demo.json";
                 }
                 // var url = window.location.origin + window.location.pathname + "home.productfeed.json";
                 // if (window.location.hostname === "localhost" || window.location.hostname.indexOf("github.io") > 0) {
@@ -570,39 +570,6 @@ System.register(['./p-9c067a18.system.js'], function (exports) {
                     this._userData = getUserData();
                 };
                 class_5.prototype.componentDidLoad = function () {
-                    // this.productJson = getProduccts(4);
-                    // this.dataUpdated = true;
-                    // // get json response
-                    // var productJsonUrl = window.location + "/home.productfeed.json";
-                    // if (window.location.hostname === "localhost" || window.location.hostname.indexOf("github.io")>0) {
-                    //   productJsonUrl = window.location + "/assets/demo.json";
-                    // }
-                    // console.log(productJsonUrl);
-                    // fetch("https://author-starterkit.unileversolutions.com/content/brands/seventh-generation/gb/en/home.productfeed.json",{
-                    //   method: 'POST',
-                    //   headers: {
-                    //     'Accept': 'application/json',
-                    //     'Content-Type': 'application/json',
-                    //     'Origin': '',
-                    //     'Host': 'https://author-starterkit.unileversolutions.com'
-                    //   },
-                    //   body: JSON.stringify({
-                    //     'client_id': 'unilever',
-                    //     'client_secret': 'unilever',
-                    //     'grant_type': 'Dr2gaYUM6ch_sPAsw2vEPHaSwEmata3A'
-                    //   })
-                    //   })
-                    //   .then((response: Response) => response.json())
-                    //   .then(response => {
-                    //     for (var i = 0; i < 4; i++) {
-                    //       this.productJson.push({
-                    //         name: response.locales[0].products.product[i].name,
-                    //         image: response.locales[0].products.product[i].imageUrl,
-                    //         url: response.locales[0].products.product[i].productPageUrl
-                    //       });
-                    //     }
-                    //     this.dataUpdated = true;
-                    //   });
                 };
                 class_5.prototype.render = function () {
                     var _this = this;
@@ -613,10 +580,10 @@ System.register(['./p-9c067a18.system.js'], function (exports) {
                         else {
                             return h("div", { class: "no-product" }, "No Product Avalable");
                         }
-                    })()), h("nav-item", { "replay-disabled": "true" }))));
+                    })(), h("p", { class: (this.productJson.length ? "" : "hide") + " text-center" }, h("a", { class: "button", href: "https://www.lovehomeandplanet.com/us/en/home.html", target: "_blank" }, "Browse All"))), h("nav-item", { "replay-disabled": "true" }))));
                 };
                 Object.defineProperty(class_5, "style", {
-                    get: function () { return ".hide{display:none!important}button{outline:none}.redeem-panel{display:-ms-flexbox;display:flex;-ms-flex-pack:center;justify-content:center;-ms-flex-direction:column;flex-direction:column;width:100%;border-radius:10px;background:rgba(95,31,100,.9);-webkit-box-shadow:inset 0 0 14px 0 #fff;-moz-box-shadow:inset 0 0 14px 0 #fff;box-shadow:inset 0 0 14px 0 #fff}.redeem-point{font-size:27px;line-height:30px;text-transform:uppercase;margin:25px auto 5px}\@media (min-width:992px){.redeem-point{font-size:40px}}.no-product{margin:0 0 40px;text-transform:uppercase;border:1px solid rgba(95,31,100,.9);padding:20px;border-left-width:0;border-right-width:0}.product-section{background:rgba(50,16,53,.7)}.product-section .title{font-size:20px;text-transform:uppercase;text-align:center;margin:30px 0;padding:10px}\@media (min-width:992px){.product-section .title{padding:15px;font-size:30px}}.product-section .product-item{display:-ms-inline-flexbox;display:inline-flex;-ms-flex-direction:column;flex-direction:column;width:calc((100% - 20px)/ 3);margin:0 20px 30px}\@media (min-width:992px){.product-section .product-item{width:calc((100% - 20px)/ 5)}}.product-section .product-item a{color:#fff;text-transform:uppercase;text-decoration:none;font-size:14px}\@media (min-width:768px){.product-section .product-item a{font-size:20px}}.product-section .product-item img{max-width:100%;border:2px solid #fff;border-radius:10px}"; },
+                    get: function () { return ".hide{display:none!important}.text-center{text-align:center}button{outline:none}.redeem-panel{display:-ms-flexbox;display:flex;-ms-flex-pack:center;justify-content:center;-ms-flex-direction:column;flex-direction:column;width:100%;border-radius:10px;background:rgba(95,31,100,.9);-webkit-box-shadow:inset 0 0 14px 0 #fff;-moz-box-shadow:inset 0 0 14px 0 #fff;box-shadow:inset 0 0 14px 0 #fff}.redeem-point{font-size:27px;line-height:30px;text-transform:uppercase;margin:25px auto 5px}\@media (min-width:992px){.redeem-point{font-size:40px}}.no-product{margin:0 0 40px;text-transform:uppercase;border:1px solid rgba(95,31,100,.9);padding:20px;border-left-width:0;border-right-width:0}.product-section{background:rgba(50,16,53,.7)}.product-section .title{font-size:20px;text-transform:uppercase;text-align:center;margin:30px 0;padding:10px}\@media (min-width:992px){.product-section .title{padding:15px;font-size:30px}}.product-section .product-item{display:-ms-inline-flexbox;display:inline-flex;-ms-flex-direction:column;flex-direction:column;width:calc((100% - 20px)/ 3);margin:0 20px 30px}\@media (min-width:992px){.product-section .product-item{width:calc((100% - 20px)/ 5)}}.product-section .product-item a{color:#fff;text-transform:uppercase;text-decoration:none;font-size:14px}\@media (min-width:768px){.product-section .product-item a{font-size:20px}}.product-section .product-item img{max-width:100%;border:2px solid #fff;border-radius:10px}.button{background:#d2264e;border-radius:10px;border-style:solid;border-width:3px;border-color:#fff;-webkit-box-sizing:border-box;box-sizing:border-box;color:#fff;cursor:pointer;text-transform:none;font-family:cargoD,Trebuchet MS,Arial,sans-serif;font-size:14px;line-height:1;padding:5px 10px;background:#3fae48}\@media (min-width:992px){.button{font-size:27px}}"; },
                     enumerable: true,
                     configurable: true
                 });
